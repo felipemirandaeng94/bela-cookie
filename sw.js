@@ -1,19 +1,19 @@
 /* Bela Cookie - service worker.
    Para publicar ícones ou versão nova do app: aumente VERSAO e o ?v= dos arquivos
    (aqui, no index.html e no manifest.webmanifest). O cache antigo é apagado sozinho. */
-const VERSAO = 'v1';
+const VERSAO = 'v2';
 const CACHE = 'bela-cookie-' + VERSAO;
 const CACHE_EXTERNO = 'bela-cookie-externo';
 const ARQUIVOS = [
   './',
   './index.html',
-  './manifest.webmanifest?v=1',
-  './icons/apple-touch-icon.png?v=1',
-  './icons/icon-192.png?v=1',
-  './icons/icon-512.png?v=1',
-  './icons/icon-maskable-512.png?v=1',
-  './icons/favicon-32.png?v=1',
-  './icons/favicon-48.png?v=1'
+  './manifest.webmanifest?v=2',
+  './icons/apple-touch-icon.png?v=2',
+  './icons/icon-192.png?v=2',
+  './icons/icon-512.png?v=2',
+  './icons/icon-maskable-512.png?v=2',
+  './icons/favicon-32.png?v=2',
+  './icons/favicon-48.png?v=2'
 ];
 const GERADOR_PDF = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
 const HOSTS_EXTERNOS = ['cdnjs.cloudflare.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];

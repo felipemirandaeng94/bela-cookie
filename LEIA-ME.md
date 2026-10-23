@@ -40,7 +40,16 @@ Todos os caminhos são relativos, então funciona em qualquer pasta. Precisa ser
 2. Botão Compartilhar > Adicionar à Tela de Início. O nome sugerido é Bela Cookie.
 3. O ícone deve ser a logo em fundo marrom. Ao abrir, não aparece barra do Safari.
 
-## Dados
+## Dados na nuvem (Supabase)
+
+Fora do Claude, o app guarda tudo no Supabase do projeto da Bela Cookie.
+- `supabase.sql`: rode uma vez no SQL Editor do Supabase (cria a tabela `docs` com acesso só para o usuário logado).
+- Crie o usuário em Authentication > Users > Add user (e-mail e senha, marque Auto Confirm User).
+- No primeiro uso o app pede e-mail e senha; depois fica logado no aparelho.
+- Sem internet o app continua funcionando e envia as alterações quando a conexão volta (o selo mostra "Pendente").
+- A URL e a chave publishable ficam no começo do bloco "Supabase" do `index.html`. A chave secret nunca deve entrar aqui.
+
+## Dados (sem Supabase)
 
 Fora do Claude, o app salva os dados no próprio aparelho (o selo no topo mostra "Neste aparelho").
 Os dados não sincronizam entre celulares. Para levar os dados do link do Claude para cá:

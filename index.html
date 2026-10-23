@@ -6,17 +6,16 @@
 <title>Bela Cookie</title>
 <meta name="description" content="Pedidos, caixa, estoque e clientes da Bela Cookie.">
 <!-- Instalação (PWA). Ao trocar os ícones, aumente o ?v= aqui, no manifest.webmanifest e no sw.js. -->
-<link rel="manifest" href="manifest.webmanifest?v=1">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=1">
-<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png?v=1">
-<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=1">
+<link rel="manifest" href="manifest.webmanifest?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="48x48" href="icons/favicon-48.png?v=2">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png?v=2">
 <meta name="application-name" content="Bela Cookie">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bela Cookie">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#FAF8F7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161110" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FFFFFF">
 <!-- Mesmo reset que o Claude aplica ao publicar o artefato, para o layout ficar idêntico. -->
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -28,7 +27,7 @@
 <style>
 /* Layout: app de bolso. Cabeçalho fixo, coluna única de até 560px, abas no rodapé, formulários em folhas que sobem de baixo. */
 :root{
-  --bg:#FAF8F7; --surface:#FFFFFF; --sunken:#F1ECEA; --line:#E5DCD8;
+  --bg:#FFFFFF; --surface:#FFFFFF; --sunken:#F1ECEA; --line:#E5DCD8;
   --ink:#2A1B16; --muted:#75655E;
   --accent:#A3203A; --accent-ink:#FFFFFF; --accent-soft:#F7E5E9;
   --cocoa:#5A3A2E; --cocoa-soft:#EEE4DF;
@@ -41,24 +40,7 @@
   --r:14px; --tab-h:64px;
   --logo-l:block; --logo-d:none;
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#161110; --surface:#211A18; --sunken:#2B2320; --line:#3B2F2B;
-  --ink:#F3EBE7; --muted:#B3A39D;
-  --accent:#F0738A; --accent-ink:#2A0A12; --accent-soft:#3C1B22;
-  --cocoa:#DDBCAE; --cocoa-soft:#34271F;
-  --ok:#6FCF97; --ok-soft:#173224; --warn:#F2B957; --warn-soft:#3A2B12; --bad:#FF8A7E; --bad-soft:#3E1C19;
-  --scrim:rgba(0,0,0,.62); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --knob:#F3EBE7;
-  --logo-l:none; --logo-d:block;
-  color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#161110; --surface:#211A18; --sunken:#2B2320; --line:#3B2F2B;
-  --ink:#F3EBE7; --muted:#B3A39D;
-  --accent:#F0738A; --accent-ink:#2A0A12; --accent-soft:#3C1B22;
-  --cocoa:#DDBCAE; --cocoa-soft:#34271F;
-  --ok:#6FCF97; --ok-soft:#173224; --warn:#F2B957; --warn-soft:#3A2B12; --bad:#FF8A7E; --bad-soft:#3E1C19;
-  --scrim:rgba(0,0,0,.62); --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); --knob:#F3EBE7;
-  --logo-l:none; --logo-d:block;
-  color-scheme:dark}
+
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
@@ -317,6 +299,7 @@ textarea.input{min-height:76px;resize:vertical}
 
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (min-width:600px){.short{grid-template-columns:repeat(6,1fr)}}
+#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px;overflow:auto}#login form{width:100%;max-width:360px;display:flex;flex-direction:column;gap:16px}#login .brand-logo,#login .brand-logo img{height:84px}.lg-h{margin:0;font-family:var(--f-display);font-size:26px}.lg-err{color:var(--bad);min-height:1.3em;margin:0;font-size:13px}
 </style>
 
 <header id="top"><div class="wrap" id="top-in"><button class="iconbtn" id="top-back" data-act="voltar" aria-label="Voltar" hidden></button><span class="brand-logo" id="top-logo"><img class="logo-l" id="logo-l" alt="Bela Cookie"><img class="logo-d" id="logo-d" alt="Bela Cookie"></span><div class="top-title" id="top-title"></div><span id="top-sync"></span></div></header>
@@ -418,7 +401,7 @@ const CAT_DESP = ['Ingredientes', 'Embalagens', 'Gás e energia', 'Entrega', 'Di
 const CAT_ENT = ['Venda avulsa', 'Encomenda', 'Aporte', 'Outros'];
 const PER = { hoje:'Hoje', ontem:'Ontem', '7d':'7 dias', '30d':'30 dias', mes:'Este mês', tudo:'Tudo' };
 
-const store = { mode:'local', ready:false, db:null, dl:null, reason:'', pending:new Set(), saving:0, queues:new Map(), unsubs:[] };
+const store = { mode:'local', ready:false, db:null, dl:null, reason:'', pending:new Set(), nuvem:'claude', saving:0, queues:new Map(), unsubs:[] };
 
 function lsGet(k) { try { return localStorage.getItem(k); } catch { return null; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } }
@@ -491,15 +474,177 @@ function switchToLocal(reason) {
   saveLocal(); render(); toast(reason, 'bad');
 }
 
+/* ---------- Supabase (nuvem própria) ---------- */
+const SB_URL = 'https://hikmokcktzkrjukgrwzr.supabase.co';
+const SB_KEY = 'sb_publishable_Vr7ZPmt01qIZkvD2odDXMg_OIyJOubf';
+const SB_LS = { sessao:'belacookie.sb.sessao', cache:'belacookie.sb.cache', fila:'belacookie.sb.fila', falhas:'belacookie.sb.falhas' };
+const SB = { sess:null, cache:{}, fila:[], ls:{}, flushing:null, timer:0, online:true, loaded:false, loginP:null, started:false };
+const jget = (k, d) => { try { const v = JSON.parse(lsGet(k)); return v == null ? d : v; } catch { return d; } };
+const sbErr = (code, msg) => Object.assign(new Error(msg || code), { code });
+async function sbHttp(path, o = {}, semToken) {
+  const h = { apikey:SB_KEY, ...(o.headers || {}) };
+  if (o.body !== undefined) h['Content-Type'] = 'application/json';
+  if (!semToken) { const t = await sbToken(); if (t) h.Authorization = 'Bearer ' + t; }
+  let r;
+  try { r = await fetch(SB_URL + path, { method:o.method || 'GET', headers:h, body:o.body !== undefined ? JSON.stringify(o.body) : undefined }); }
+  catch { throw sbErr('unavailable', 'Sem conexão'); }
+  if (r.status === 401 && !semToken && !o.retried) { await sbRefresh(); return sbHttp(path, { ...o, retried:true }); }
+  if (r.status >= 500 || r.status === 429) throw sbErr('unavailable');
+  const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch {}
+  if (!r.ok) throw Object.assign(sbErr(r.status === 401 || r.status === 403 ? 'not_granted' : 'invalid_argument', (j && (j.msg || j.message || j.error_description)) || ('Erro ' + r.status)), { status:r.status });
+  return j;
+}
+function sbSave(j) {
+  SB.sess = { access:j.access_token, refresh:j.refresh_token, exp:Math.floor(Date.now() / 1000) + (j.expires_in || 3600), uid:j.user.id, email:j.user.email };
+  lsSet(SB_LS.sessao, JSON.stringify(SB.sess));
+}
+let sbRefreshP = null;
+function sbRefresh() {
+  if (!SB.sess) return Promise.reject(sbErr('not_granted'));
+  if (!sbRefreshP) sbRefreshP = sbHttp('/auth/v1/token?grant_type=refresh_token', { method:'POST', body:{ refresh_token:SB.sess.refresh } }, true)
+    .then(sbSave)
+    .catch(e => { if (e.code !== 'unavailable') { SB.sess = null; try { localStorage.removeItem(SB_LS.sessao); } catch {} } throw e; })
+    .finally(() => { sbRefreshP = null; });
+  return sbRefreshP;
+}
+async function sbToken() {
+  if (!SB.sess) throw sbErr('not_granted', 'Sem login');
+  if (SB.sess.exp - 60 < Date.now() / 1000) { try { await sbRefresh(); } catch (e) { if (e.code !== 'unavailable') throw e; } }
+  return SB.sess && SB.sess.access;
+}
+function showLogin() {
+  return new Promise(res => {
+    let el = $('#login'); if (!el) { el = document.createElement('div'); el.id = 'login'; document.body.appendChild(el); }
+    el.innerHTML = `<form id="login-f"><span class="brand-logo"><img class="logo-l" alt="Bela Cookie" src="${LOGO_L}"><img class="logo-d" alt="Bela Cookie" src="${LOGO_D}"></span>
+      <div><h1 class="lg-h">Entrar</h1><p class="small muted" style="margin:6px 0 0">Use o e-mail e a senha da Bela Cookie. Isso é pedido só uma vez neste aparelho.</p></div>
+      <div class="field"><label for="lg-email">E-mail</label><input class="input" id="lg-email" type="email" autocomplete="username" autocapitalize="none" required></div>
+      <div class="field"><label for="lg-senha">Senha</label><input class="input" id="lg-senha" type="password" autocomplete="current-password" required></div>
+      <p class="lg-err" id="lg-err" role="alert"></p>
+      <button class="btn primary block" id="lg-ok" type="submit">Entrar</button></form>`;
+    $('#login-f').addEventListener('submit', async e => {
+      e.preventDefault();
+      const b = $('#lg-ok'), er = $('#lg-err'); b.disabled = true; er.textContent = '';
+      try {
+        const j = await sbHttp('/auth/v1/token?grant_type=password', { method:'POST', body:{ email:$('#lg-email').value.trim(), password:$('#lg-senha').value } }, true);
+        sbSave(j); el.remove(); res();
+      } catch (x) {
+        er.textContent = x.code === 'unavailable' ? 'Sem internet. Conecte e tente de novo.' : 'E-mail ou senha incorretos.';
+        b.disabled = false;
+      }
+    });
+    setTimeout(() => { const i = $('#lg-email'); if (i) i.focus(); }, 50);
+  });
+}
+function sbNeedLogin() {
+  if (SB.sess || SB.loginP) return SB.loginP;
+  SB.loginP = showLogin().then(() => { SB.loginP = null; sbFlush(); sbPull(); });
+  return SB.loginP;
+}
+const sbCol = c => (SB.cache[c] = SB.cache[c] || {});
+const sbCacheSave = () => lsSet(SB_LS.cache, JSON.stringify(SB.cache));
+const sbFilaSave = () => lsSet(SB_LS.fila, JSON.stringify(SB.fila));
+function sbSnap(col, l) {
+  const c = sbCol(col);
+  l.cb(l.doc ? { exists:!!c.geral, data:() => c.geral } : { docs:Object.entries(c).map(([id, d]) => ({ id, exists:true, data:() => d })) });
+}
+function sbNotify(col) { (SB.ls[col] || []).forEach(l => { try { sbSnap(col, l); } catch {} }); }
+function sbEnqueue(col, id, data) {
+  const c = sbCol(col);
+  if (data === null) delete c[id]; else c[id] = data;
+  SB.fila = SB.fila.filter(f => !(f.col === col && f.id === id));
+  SB.fila.push({ col, id, data, t:Date.now() + Math.random() });
+  sbCacheSave(); sbFilaSave();
+  clearTimeout(SB.timer); SB.timer = setTimeout(sbFlush, 250);
+  renderTop();
+  return Promise.resolve();
+}
+function sbFlush() {
+  if (SB.flushing) return SB.flushing;
+  clearTimeout(SB.timer);
+  SB.flushing = (async () => {
+    try {
+      while (SB.fila.length) {
+        const lote = SB.fila.slice(0, 200);
+        try {
+          const ups = lote.filter(f => f.data !== null), dels = lote.filter(f => f.data === null);
+          if (ups.length) await sbHttp('/rest/v1/docs?on_conflict=user_id,col,id', { method:'POST', headers:{ Prefer:'resolution=merge-duplicates,return=minimal' },
+            body:ups.map(f => ({ user_id:SB.sess.uid, col:f.col, id:f.id, data:f.data, updated_at:new Date().toISOString() })) });
+          for (const f of dels) await sbHttp(`/rest/v1/docs?col=eq.${encodeURIComponent(f.col)}&id=eq.${encodeURIComponent(f.id)}`, { method:'DELETE' });
+        } catch (e) {
+          if (e.code === 'unavailable' || e.code === 'not_granted') throw e;
+          const falhas = jget(SB_LS.falhas, []); falhas.push(...lote); lsSet(SB_LS.falhas, JSON.stringify(falhas.slice(-500)));
+          toast('Uma alteração não foi aceita pela nuvem: ' + e.message, 'bad');
+        }
+        const enviados = new Set(lote.map(f => f.t));
+        SB.fila = SB.fila.filter(f => !enviados.has(f.t)); sbFilaSave();
+      }
+      SB.online = true;
+    } catch (e) {
+      if (e.code === 'unavailable') SB.online = false;
+      else if (!SB.sess) sbNeedLogin();
+    }
+  })().finally(() => {
+    SB.flushing = null; renderTop();
+    if (SB.fila.length) SB.timer = setTimeout(sbFlush, 15000);
+  });
+  return SB.flushing;
+}
+async function sbPull() {
+  if (!SB.sess) return sbNeedLogin();
+  if (SB.fila.length || SB.flushing) return;
+  try {
+    const rows = [];
+    for (let off = 0; ; off += 1000) {
+      const p = await sbHttp(`/rest/v1/docs?select=col,id,data&order=col,id&limit=1000&offset=${off}`);
+      rows.push(...p); if (p.length < 1000) break;
+    }
+    if (SB.fila.length || SB.flushing) return;
+    const nc = {}; rows.forEach(r => { (nc[r.col] = nc[r.col] || {})[r.id] = r.data; });
+    const antes = SB.cache; SB.cache = nc; SB.online = true;
+    const primeira = !SB.loaded; SB.loaded = true; sbCacheSave();
+    [...COLS, 'config'].forEach(c => { if (primeira || JSON.stringify(antes[c] || {}) !== JSON.stringify(nc[c] || {})) sbNotify(c); });
+  } catch (e) { if (e.code === 'unavailable') SB.online = false; else if (!SB.sess) sbNeedLogin(); }
+  renderTop();
+}
+function sbStart() {
+  if (SB.started) return; SB.started = true;
+  sbFlush().then(sbPull);
+  setInterval(() => { if (document.visibilityState === 'visible') sbFlush().then(sbPull); }, 20000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sbFlush().then(sbPull); });
+  window.addEventListener('online', () => sbFlush().then(sbPull));
+}
+function sbAdapter() {
+  const reg = (col, doc, cb) => {
+    const l = { cb, doc }; (SB.ls[col] = SB.ls[col] || []).push(l);
+    if (SB.loaded) setTimeout(() => { try { sbSnap(col, l); } catch {} }, 0);
+    return () => { SB.ls[col] = (SB.ls[col] || []).filter(x => x !== l); };
+  };
+  return {
+    collection:col => ({ doc:id => ({ set:d => sbEnqueue(col, id, d), delete:() => sbEnqueue(col, id, null) }), onSnapshot:cb => reg(col, false, cb) }),
+    doc:path => { const [col, id] = path.split('/'); return { set:d => sbEnqueue(col, id, d), onSnapshot:cb => reg(col, true, cb) }; }
+  };
+}
+async function initSupabase() {
+  SB.sess = jget(SB_LS.sessao, null);
+  SB.cache = jget(SB_LS.cache, {}); SB.fila = jget(SB_LS.fila, []); SB.loaded = lsGet(SB_LS.cache) !== null;
+  if (!SB.sess) { SB.loginP = showLogin().then(() => { SB.loginP = null; }); await SB.loginP; }
+  return sbAdapter();
+}
+
 async function initCloud() {
   const c = window.claude;
-  if (!c || typeof c.use !== 'function') { store.reason = 'Este app está aberto fora do Claude, então os dados ficam guardados neste navegador.'; return; }
-  const safe = n => { try { return Promise.resolve(c.use(n)).catch(() => null); } catch { return Promise.resolve(null); } };
-  const [db, dl, user] = await Promise.all([safe('db'), safe('downloads'), safe('user')]);
-  store.dl = dl || null;
-  if (!db) { store.reason = 'A nuvem do Claude não está disponível nesta visualização, então os dados ficam guardados neste aparelho.'; return; }
-  let can = null; try { if (user) can = await user.can('data.write'); } catch {}
-  if (can === false) { store.reason = 'Sua conta pode abrir este app, mas não tem permissão para salvar na nuvem dele. Os dados ficam guardados neste aparelho.'; return; }
+  let db;
+  if (!c || typeof c.use !== 'function') {
+    if (!SB_URL || !SB_KEY) { store.reason = 'Este app está aberto fora do Claude, então os dados ficam guardados neste navegador.'; return; }
+    db = await initSupabase(); store.nuvem = 'supabase';
+  } else {
+    const safe = n => { try { return Promise.resolve(c.use(n)).catch(() => null); } catch { return Promise.resolve(null); } };
+    const [d0, dl, user] = await Promise.all([safe('db'), safe('downloads'), safe('user')]);
+    store.dl = dl || null; db = d0;
+    if (!db) { store.reason = 'A nuvem do Claude não está disponível nesta visualização, então os dados ficam guardados neste aparelho.'; return; }
+    let can = null; try { if (user) can = await user.can('data.write'); } catch {}
+    if (can === false) { store.reason = 'Sua conta pode abrir este app, mas não tem permissão para salvar na nuvem dele. Os dados ficam guardados neste aparelho.'; return; }
+  }
   store.db = db; store.mode = 'nuvem';
   COLS.forEach(k => S[k] = {}); S.config = {...DEF_CONFIG};
   store.pending = new Set([...COLS, 'config']);
@@ -524,6 +669,7 @@ async function initCloud() {
     }, onErr);
     store.unsubs.push(un);
   } catch { store.pending.delete('config'); }
+  if (store.nuvem === 'supabase') sbStart();
   setTimeout(() => { if (store.pending.size) { store.pending.clear(); render(); toast('A nuvem está demorando a responder.', 'bad'); } }, 15000);
 }
 const loading = () => !store.ready || (store.mode === 'nuvem' && store.pending.size > 0);
@@ -594,7 +740,11 @@ function go(v, isBack) {
 }
 function syncPill() {
   if (!store.ready) return `<span class="sync busy"><i></i>Conectando</span>`;
-  if (store.mode === 'nuvem') return `<button class="sync nuvem ${store.saving || store.pending.size ? 'busy' : ''}" data-act="nav" data-v="backup" title="Onde os dados ficam">${store.saving ? '<i></i>Salvando' : '<i></i>Nuvem'}</button>`;
+  if (store.mode === 'nuvem') {
+    const pend = store.nuvem === 'supabase' ? SB.fila.length : 0;
+    const lab = (store.saving || (pend && SB.online)) ? 'Salvando' : (pend ? `Pendente (${pend})` : 'Nuvem');
+    return `<button class="sync nuvem ${lab !== 'Nuvem' ? 'busy' : ''}" data-act="nav" data-v="backup" title="Onde os dados ficam">${lab === 'Nuvem' ? '<i></i>Nuvem' : '<i></i>' + lab}</button>`;
+  }
   return `<button class="sync local" data-act="nav" data-v="backup" title="Onde os dados ficam"><i></i>Neste aparelho</button>`;
 }
 function dataLonga() { const d = new Date(); return `${['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`; }
@@ -883,9 +1033,10 @@ VIEWS.backup = () => {
   const lc = nuvem ? localCount() : 0;
   const n = c => Object.keys(S[c]).length;
   let h = '<div class="stack">';
-  h += `<div class="card status-card ${nuvem ? 'ok' : ''}"><div class="sc-head"><span class="dot"></span><strong>${nuvem ? 'Salvando na nuvem do Claude' : 'Salvando neste aparelho'}</strong></div>
-    <p class="small">${nuvem ? 'Cada alteração é guardada junto com este app, na conta do Claude. Abra o mesmo link em outro aparelho, com a mesma conta, e os dados estarão lá.' : esc(store.reason || 'Os dados ficam guardados neste navegador.') + ' Se os dados do navegador forem apagados ou você trocar de aparelho, eles se perdem. Baixe um backup toda semana.'}</p>
+  h += `<div class="card status-card ${nuvem ? 'ok' : ''}"><div class="sc-head"><span class="dot"></span><strong>${nuvem ? (store.nuvem === 'supabase' ? 'Salvando na nuvem' : 'Salvando na nuvem do Claude') : 'Salvando neste aparelho'}</strong></div>
+    <p class="small">${nuvem ? (store.nuvem === 'supabase' ? 'Cada alteração é enviada para a nuvem. Entre com o mesmo e-mail e senha em outro aparelho e os dados estarão lá. Sem internet, o app guarda as alterações e envia quando a conexão voltar.' + (SB.fila.length ? ' Ainda não enviadas: ' + SB.fila.length + '.' : '') : 'Cada alteração é guardada junto com este app, na conta do Claude. Abra o mesmo link em outro aparelho, com a mesma conta, e os dados estarão lá.') : esc(store.reason || 'Os dados ficam guardados neste navegador.') + ' Se os dados do navegador forem apagados ou você trocar de aparelho, eles se perdem. Baixe um backup toda semana.'}</p>
     <div class="counts"><span class="pill neutral">${plural(n('produtos'), 'produto', 'produtos')}</span><span class="pill neutral">${plural(n('clientes'), 'cliente', 'clientes')}</span><span class="pill neutral">${plural(n('pedidos'), 'pedido', 'pedidos')}</span><span class="pill neutral">${plural(n('caixa'), 'lançamento', 'lançamentos')}</span><span class="pill neutral">${plural(n('estoque'), 'movimento de estoque', 'movimentos de estoque')}</span></div></div>`;
+  if (nuvem && store.nuvem === 'supabase') h += `<button class="btn line block" data-act="sair" data-confirm="Toque de novo para sair">Sair desta conta</button>`;
   if (lc) h += `<div class="callout"><p><strong>Há ${plural(lc, 'registro', 'registros')} salvos só neste aparelho.</strong> Envie para a nuvem para não perder.</p><button class="btn primary" data-act="migrar">${icon('upload')}Enviar para a nuvem</button></div>`;
   h += `<h2 class="sec-title">Guardar uma cópia</h2><div class="card stack"><p class="small muted">Último backup neste aparelho: ${ult ? fmtDate(ult) : 'nunca'}.</p>
     <button class="btn primary block" data-act="exp-json">${icon('share')}Enviar cópia</button>
@@ -1540,6 +1691,7 @@ const ACT = {
   'cli-copy':b => { const c = S.clientes[b.dataset.id]; if (c) copiar(c.telefone, 'Número copiado.'); },
   'cli-del':b => { if (!arm(b)) return; del('clientes', b.dataset.id); closeSheet(); toast('Cliente excluído. Os pedidos dele continuam no histórico.'); },
   seed:() => seed(),
+  sair:b => { if (!arm(b)) return; if (SB.fila.length) return toast('Há alterações ainda não enviadas. Conecte à internet antes de sair.', 'bad'); [SB_LS.sessao, SB_LS.cache, SB_LS.fila].forEach(k => { try { localStorage.removeItem(k); } catch {} }); location.reload(); },
   'exp-json':() => exportar(),
   'copy-json':() => { copiar(JSON.stringify(snapshotData()), 'Backup copiado. Cole numa conversa sua no WhatsApp para guardar.'); lsSet(LS_BKP, today()); },
   'exp-csv':() => exportarCSV(),
