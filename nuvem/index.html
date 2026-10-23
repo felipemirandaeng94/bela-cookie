@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bela Cookie</title>
+<link rel="manifest" href="manifest.webmanifest?v=1">
+<link rel="icon" type="image/png" sizes="32x32" href="../icons/favicon-32.png?v=1">
+<link rel="apple-touch-icon" sizes="180x180" href="../icons/apple-touch-icon.png?v=1">
+<meta name="apple-mobile-web-app-title" content="Bela Cookie">
+<meta name="theme-color" content="#6E423F">
+<style>
+  :root{--bg:#6E423F;--ink:#F9CFCC;--btn:#F9CFCC;--btn-ink:#4A2A27;color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;min-height:100dvh;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:grid;place-items:center;padding:max(24px,env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));text-align:center}
+  main{max-width:380px;display:flex;flex-direction:column;align-items:center;gap:18px}
+  img{width:220px;max-width:70vw;height:auto}
+  a.btn{display:block;width:100%;background:var(--btn);color:var(--btn-ink);text-decoration:none;font-weight:700;border-radius:14px;padding:15px 18px;font-size:17px}
+  a.btn:focus-visible{outline:3px solid #fff;outline-offset:3px}
+  p{margin:0;opacity:.9;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <img src="logo.png" alt="Bela Cookie">
+  <a class="btn" id="abrir" href="https://claude.ai/artifact/GwXWbegmLczSvfe6LyLQp8">Abrir Bela Cookie</a>
+  <p>Este atalho abre o app publicado no Claude, com os dados salvos na nuvem. Para colocar na tela inicial, use o menu do navegador nesta página.</p>
+</main>
+<script>
+  if (new URLSearchParams(location.search).get('abrir') === '1') location.replace(document.getElementById('abrir').href);
+</script>
+</body>
+</html>
