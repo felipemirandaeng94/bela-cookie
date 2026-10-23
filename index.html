@@ -299,7 +299,7 @@ textarea.input{min-height:76px;resize:vertical}
 
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (min-width:600px){.short{grid-template-columns:repeat(6,1fr)}}
-#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}#login form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;margin:auto}#login .lg-top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;margin-bottom:6px}#login .brand-logo,#login .brand-logo img{height:96px}.lg-h{margin:0;font-family:var(--f-display);font-size:24px}.lg-err{color:var(--bad);margin:0;font-size:13px;text-align:center}.lg-err:empty{display:none}#login .btn{margin-top:4px}
+#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}#login form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;margin:auto}#login .lg-top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;margin-bottom:6px}#login .brand-logo,#login .brand-logo img{height:96px}.lg-h{margin:0;font-family:var(--f-display);font-size:24px}.lg-err{color:var(--bad);margin:0;font-size:13px;text-align:center}.lg-err:empty{display:none}#login .btn{margin-top:4px}#login .lg-box{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}#login .field>label{color:var(--ink);font-size:14px}#login .input{background:var(--sunken);border-color:var(--line)}#login .input:focus{background:var(--surface)}
 </style>
 
 <header id="top"><div class="wrap" id="top-in"><button class="iconbtn" id="top-back" data-act="voltar" aria-label="Voltar" hidden></button><span class="brand-logo" id="top-logo"><img class="logo-l" id="logo-l" alt="Bela Cookie"><img class="logo-d" id="logo-d" alt="Bela Cookie"></span><div class="top-title" id="top-title"></div><span id="top-sync"></span></div></header>
@@ -517,10 +517,10 @@ function showLogin() {
     let el = $('#login'); if (!el) { el = document.createElement('div'); el.id = 'login'; document.body.appendChild(el); }
     el.innerHTML = `<form id="login-f"><div class="lg-top"><span class="brand-logo"><img class="logo-l" alt="Bela Cookie" src="${LOGO_L}"><img class="logo-d" alt="Bela Cookie" src="${LOGO_D}"></span>
       <div><h1 class="lg-h">Entrar</h1><p class="small muted" style="margin:6px 0 0">Use o e-mail e a senha da Bela Cookie. Isso é pedido só uma vez neste aparelho.</p></div></div>
-      <div class="field"><label for="lg-email">E-mail</label><input class="input" id="lg-email" type="email" autocomplete="username" autocapitalize="none" required></div>
+      <div class="lg-box"><div class="field"><label for="lg-email">E-mail</label><input class="input" id="lg-email" type="email" autocomplete="username" autocapitalize="none" required></div>
       <div class="field"><label for="lg-senha">Senha</label><input class="input" id="lg-senha" type="password" autocomplete="current-password" required></div>
       <p class="lg-err" id="lg-err" role="alert"></p>
-      <button class="btn primary block" id="lg-ok" type="submit">Entrar</button></form>`;
+      <button class="btn primary block" id="lg-ok" type="submit">Entrar</button></div></form>`;
     $('#login-f').addEventListener('submit', async e => {
       e.preventDefault();
       const b = $('#lg-ok'), er = $('#lg-err'); b.disabled = true; er.textContent = '';
