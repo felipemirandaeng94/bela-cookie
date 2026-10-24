@@ -16,6 +16,7 @@
 <meta name="apple-mobile-web-app-title" content="Bela Cookie">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#FFFFFF">
+<script>try{if(localStorage.getItem("belacookie.tema")==="escuro"){document.documentElement.setAttribute("data-theme","dark");}}catch(e){}</script>
 <!-- Mesmo reset que o Claude aplica ao publicar o artefato, para o layout ficar idêntico. -->
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -40,6 +41,15 @@
   --r:14px; --tab-h:64px;
   --logo-l:block; --logo-d:none;
 }
+:root[data-theme="dark"]{
+  --bg:#121212; --surface:#1D1D1D; --sunken:#272727; --line:#363636;
+  --ink:#F5F5F5; --muted:#A8A8A8;
+  --accent:#F0738A; --accent-ink:#2A0A12; --accent-soft:#3A1C23;
+  --cocoa:#E3E3E3; --cocoa-soft:#2B2B2B;
+  --ok:#6FCF97; --ok-soft:#173224; --warn:#F2B957; --warn-soft:#3A2B12; --bad:#FF8A7E; --bad-soft:#3E1C19;
+  --scrim:rgba(0,0,0,.65); --shadow:0 1px 2px rgba(0,0,0,.5),0 8px 24px rgba(0,0,0,.45); --knob:#F5F5F5;
+  --logo-l:none; --logo-d:block;
+  color-scheme:dark}
 
 
 *{box-sizing:border-box}
@@ -60,7 +70,10 @@ h1,h2,h3{text-wrap:balance}
 
 /* Cabeçalho */
 #top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
-#top .wrap{display:flex;align-items:center;gap:12px;padding-block:14px 10px}
+#top .wrap{display:flex;align-items:center;gap:10px;padding-block:14px 10px}
+#top-sync{display:inline-flex;align-items:center;gap:8px;flex:none}
+.themebtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:none;padding:0}
+.themebtn svg{width:19px;height:19px}
 .brand{width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
 .brand svg{width:24px;height:24px}
 .brand-logo{flex:none;display:block;height:50px}
@@ -300,7 +313,9 @@ textarea.input{min-height:76px;resize:vertical}
 
 @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 @media (min-width:600px){.short{grid-template-columns:repeat(6,1fr)}}
-#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}#login form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;margin:auto}#login .lg-top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;margin-bottom:6px}#login .brand-logo,#login .brand-logo img{height:96px}.lg-h{margin:0;font-family:var(--f-display);font-size:24px}.lg-err{color:var(--bad);margin:0;font-size:13px;text-align:center}.lg-err:empty{display:none}#login .btn{margin-top:4px}#login .lg-box{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}#login,#login .lg-h,#login p,#login .field>label,#login .input{color:#000}#login .muted{color:#000}#login .field>label{font-size:14px}#login .input{background:var(--sunken);border-color:var(--line)}#login .input:focus{background:var(--surface)}
+#login{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto}#login form{width:100%;max-width:340px;display:flex;flex-direction:column;gap:14px;margin:auto}#login .lg-top{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;margin-bottom:6px}#login .brand-logo,#login .brand-logo img{height:96px}.lg-h{margin:0;font-family:var(--f-display);font-size:24px}.lg-err{color:var(--bad);margin:0;font-size:13px;text-align:center}.lg-err:empty{display:none}#login .btn{margin-top:4px}#login .lg-box{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}#login,#login .lg-h,#login p,#login .field>label,#login .input{color:var(--ink)}#login .muted{color:var(--muted)}#login .field>label{font-size:14px}#login .input{background:var(--sunken);border-color:var(--line)}#login .input:focus{background:var(--surface)}
+@media (max-width:430px){#top .wrap{gap:8px}#top .brand-logo,#top .brand-logo img{height:40px}#top .sync{padding:6px 9px;font-size:11px;gap:6px}#top-sync{gap:6px}.themebtn{width:34px;height:34px}.themebtn svg{width:17px;height:17px}.top-title h1{font-size:20px}.top-title small{white-space:nowrap}}
+@media (max-width:380px){.top-title h1{font-size:18px}}
 </style>
 
 <header id="top"><div class="wrap" id="top-in"><button class="iconbtn" id="top-back" data-act="voltar" aria-label="Voltar" hidden></button><span class="brand-logo" id="top-logo"><img class="logo-l" id="logo-l" alt="Bela Cookie"><img class="logo-d" id="logo-d" alt="Bela Cookie"></span><div class="top-title" id="top-title"></div><span id="top-sync"></span></div></header>
@@ -345,6 +360,8 @@ const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
 const validId = id => /^[A-Za-z0-9_\-.~:@+]{1,200}$/.test(id) && id !== '.' && id !== '..';
 
 const IC = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
   home:'<path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z"/>',
   ticket:'<path d="M6 3h12v18l-2.5-1.6L13 21l-2.5-1.6L8 21l-2-1.3z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
   wallet:'<path d="M5 7.5A2.5 2.5 0 0 1 7.5 5H18v3"/><rect x="4" y="8" width="16" height="11" rx="2"/><path d="M15.5 13.5h.01"/>',
@@ -743,12 +760,20 @@ function syncPill() {
   if (!store.ready) return `<span class="sync busy"><i></i>Conectando</span>`;
   if (store.mode === 'nuvem') {
     const pend = store.nuvem === 'supabase' ? SB.fila.length : 0;
-    const lab = (store.saving || (pend && SB.online)) ? 'Salvando' : (pend ? `Pendente (${pend})` : 'Nuvem');
-    return `<button class="sync nuvem ${lab !== 'Nuvem' ? 'busy' : ''}" data-act="nav" data-v="backup" title="Onde os dados ficam">${lab === 'Nuvem' ? '<i></i>Nuvem' : '<i></i>' + lab}</button>`;
+    const lab = (store.saving || (pend && SB.online)) ? 'Salvando' : (pend ? `Pendente (${pend})` : 'Sincronizado');
+    return `<button class="sync nuvem ${lab !== 'Sincronizado' ? 'busy' : ''}" data-act="nav" data-v="backup" title="Onde os dados ficam"><i></i>${lab}</button>`;
   }
   return `<button class="sync local" data-act="nav" data-v="backup" title="Onde os dados ficam"><i></i>Neste aparelho</button>`;
 }
 function dataLonga() { const d = new Date(); return `${['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'][d.getDay()]}, ${pad(d.getDate())}/${pad(d.getMonth() + 1)}`; }
+const temaEscuro = () => document.documentElement.getAttribute('data-theme') === 'dark';
+function aplicaTema(escuro) {
+  if (escuro) document.documentElement.setAttribute('data-theme', 'dark'); else document.documentElement.removeAttribute('data-theme');
+  lsSet('belacookie.tema', escuro ? 'escuro' : 'claro');
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', escuro ? '#121212' : '#FFFFFF');
+  renderTop();
+}
+const themeBtn = () => `<button class="themebtn" data-act="tema" aria-label="${temaEscuro() ? 'Mudar para tela clara' : 'Mudar para tela escura'}" title="${temaEscuro() ? 'Tela clara' : 'Tela escura'}">${icon(temaEscuro() ? 'sun' : 'moon')}</button>`;
 function renderTop() {
   const c = S.config, sub = SUB.has(view), back = $('#top-back');
   back.hidden = !sub; $('#top-logo').hidden = sub;
@@ -756,7 +781,7 @@ function renderTop() {
   $('#top-title').innerHTML = view === 'inicio'
     ? `<small>${esc(dataLonga())}</small><h1>Olá${c.responsavel ? ', ' + esc(c.responsavel) : ''}</h1>`
     : `<h1>${TITLES[view]}</h1>`;
-  $('#top-sync').innerHTML = syncPill();
+  $('#top-sync').innerHTML = syncPill() + themeBtn();
 }
 function renderTabs() {
   const cur = SUB.has(view) ? 'mais' : view;
@@ -1712,6 +1737,7 @@ const ACT = {
   'cli-copy':b => { const c = S.clientes[b.dataset.id]; if (c) copiar(c.telefone, 'Número copiado.'); },
   'cli-del':b => { if (!arm(b)) return; del('clientes', b.dataset.id); closeSheet(); toast('Cliente excluído. Os pedidos dele continuam no histórico.'); },
   seed:() => seed(),
+  tema:() => aplicaTema(!temaEscuro()),
   sair:b => { if (!arm(b)) return; if (SB.fila.length) return toast('Há alterações ainda não enviadas. Conecte à internet antes de sair.', 'bad'); [SB_LS.sessao, SB_LS.cache, SB_LS.fila].forEach(k => { try { localStorage.removeItem(k); } catch {} }); location.reload(); },
   'exp-json':() => exportar(),
   'copy-json':() => { copiar(JSON.stringify(snapshotData()), 'Backup copiado. Cole numa conversa sua no WhatsApp para guardar.'); lsSet(LS_BKP, today()); },
