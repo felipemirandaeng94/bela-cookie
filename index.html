@@ -1123,7 +1123,7 @@ function sheetPedForm(opts) {
 
   let h = sheetHead(ed ? `${title} ${nfmt(F.num)}` : title, tipo === 'rapida' ? 'Use a calculadora do valor e pronto.' : orc ? 'Não baixa estoque até virar pedido.' : '');
   h += `<form id="pf" class="stack" novalidate><div class="form-err" hidden></div>`;
-  h += `<div class="field"><label for="pf-cli">Cliente${tipo === 'rapida' ? ' (opcional)' : ''}</label><input class="input" id="pf-cli" autocomplete="off" autocapitalize="words" placeholder="Toque para escolher ou digite um nome novo" value="${esc(F.clienteNome)}" role="combobox" aria-expanded="false" aria-controls="pf-pick"><div class="picker" id="pf-pick" role="listbox" hidden></div><span class="cli-tag" id="pf-tag"></span></div>`;
+  h += `<div class="field"><label for="pf-cli">Cliente${tipo === 'rapida' ? ' (opcional)' : ''}</label><input class="input" id="pf-cli" autocomplete="off" autocapitalize="words" placeholder="Digite o nome (a lista aparece com 2 letras)" value="${esc(F.clienteNome)}" role="combobox" aria-expanded="false" aria-controls="pf-pick"><div class="picker" id="pf-pick" role="listbox" hidden></div><span class="cli-tag" id="pf-tag"></span></div>`;
   h += `<div class="field"><label for="pf-tel">WhatsApp do cliente</label><input class="input" id="pf-tel" inputmode="tel" autocomplete="off" placeholder="(21) 99999-9999" value="${esc(cli ? cli.telefone || '' : '')}"></div>`;
   if (tipo === 'rapida') {
     h += `<div class="field"><label for="pf-desc">Descrição</label><input class="input" id="pf-desc" placeholder="Ex.: 3 cookies no balcão" value="${esc(F.descricao)}"></div>`;
@@ -1190,8 +1190,10 @@ function sheetPedForm(opts) {
     const drawPick = () => {
       const q = norm(cliIn.value), qd = digits(cliIn.value);
       let L = listaClientes().sort((a, b) => (ult[b.id] || '').localeCompare(ult[a.id] || '') || String(a.nome).localeCompare(String(b.nome), 'pt-BR'));
-      if (q) L = L.filter(c => norm(c.nome).includes(q) || (qd.length >= 3 && digits(c.telefone).includes(qd)));
-      pick.innerHTML = L.length ? L.slice(0, 50).map(c => `<button type="button" role="option" data-cid="${esc(c.id)}" aria-selected="${c.id === sel}"><span class="ava round" aria-hidden="true">${esc(String(c.nome || '?').charAt(0).toUpperCase())}</span><span class="item-body"><strong>${esc(c.nome)}</strong><span class="sub">${esc(c.telefone || 'Sem WhatsApp')}${ult[c.id] ? ' · último pedido ' + fmtDate(ult[c.id]).slice(0, 5) : ''}</span></span></button>`).join('')
+      if (q.length < 2 && qd.length < 3) { hidePick(); return; }
+      L = L.filter(c => norm(c.nome).includes(q) || (qd.length >= 3 && digits(c.telefone).includes(qd)));
+      const mais = Math.max(0, L.length - 6);
+      pick.innerHTML = L.length ? L.slice(0, 6).map(c => `<button type="button" role="option" data-cid="${esc(c.id)}" aria-selected="${c.id === sel}"><span class="ava round" aria-hidden="true">${esc(String(c.nome || '?').charAt(0).toUpperCase())}</span><span class="item-body"><strong>${esc(c.nome)}</strong><span class="sub">${esc(c.telefone || 'Sem WhatsApp')}${ult[c.id] ? ' · último pedido ' + fmtDate(ult[c.id]).slice(0, 5) : ''}</span></span></button>`).join('') + (mais ? `<div class="pick-empty">Mais ${mais}. Continue digitando para filtrar.</div>` : '')
         : `<div class="pick-empty">${q ? 'Nenhum cadastro com esse nome. Ao salvar, vira cliente novo.' : 'Nenhum cliente cadastrado ainda. Digite o nome para cadastrar.'}</div>`;
       pick.hidden = false; cliIn.setAttribute('aria-expanded', 'true');
     };
