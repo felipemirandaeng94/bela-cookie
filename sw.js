@@ -1,7 +1,7 @@
 /* Bela Cookie - service worker.
    Para publicar ícones ou versão nova do app: aumente VERSAO e o ?v= dos arquivos
    (aqui, no index.html e no manifest.webmanifest). O cache antigo é apagado sozinho. */
-const VERSAO = 'v2';
+const VERSAO = 'v3';
 const CACHE = 'bela-cookie-' + VERSAO;
 const CACHE_EXTERNO = 'bela-cookie-externo';
 const ARQUIVOS = [

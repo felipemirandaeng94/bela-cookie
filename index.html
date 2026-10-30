@@ -292,6 +292,19 @@ textarea.input{min-height:76px;resize:vertical}
 .perf::before,.perf::after{content:"";position:absolute;top:-10px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:1px solid var(--line)}
 .perf::before{left:-10px}.perf::after{right:-10px}
 .t-line{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.res-card{display:flex;flex-direction:column;gap:12px}
+.res-card h3{margin:0;font-size:15px;font-weight:700}
+.res-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;width:100%;text-align:left;background:none;border:0;padding:0;color:var(--ink);font:inherit}
+button.res-row{cursor:pointer}
+.res-row .rt{display:flex;flex-direction:column;gap:2px;min-width:0;font-size:15px}
+.res-row .rt small{font-size:12px;color:var(--muted)}
+.res-row .rn{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;white-space:nowrap}
+.res-row .rn.bad{color:var(--bad)} .res-row .rn.warn{color:var(--warn)} .res-row .rn.ok{color:var(--ok)}
+.res-row.tot{border-top:1px solid var(--line);padding-top:12px}
+.res-row.tot .rt,.res-row.tot .rn{font-size:17px;font-weight:700}
+.res-list{margin:-4px 0 0;padding:8px 10px;border-radius:10px;background:var(--bg);font-size:13px;display:flex;flex-direction:column;gap:4px}
+.res-list span{display:flex;justify-content:space-between;gap:10px}
+
 .t-line > span:first-child{min-width:0}
 .t-line .q{color:var(--muted);font-size:12px;display:block}
 .t-line.total{font-size:18px;font-weight:800;font-family:var(--f-display)}
@@ -917,6 +930,7 @@ VIEWS.estoque = () => {
   const baixo = L.filter(p => (disp[p.id] || 0) <= (Number(p.estoqueMin) || 0)).length;
   let h = '<div class="stack">';
   if (!all.length) return h + `<div class="callout"><h3>Nenhum produto cadastrado</h3><p>O estoque é contado por produto. Cadastre o cardápio para começar.</p><div class="btn-row"><button class="btn primary" data-act="seed">Usar cardápio da Bela Cookie</button><button class="btn line" data-act="prod-novo">Cadastrar produto</button></div></div></div>`;
+  h += `<button class="btn line block" data-act="est-resumo">${icon('chart')}Resumo do estoque</button>`;
   h += searchBox('busca-est', UI.estQ, 'Buscar produto');
   h += `<div class="card"><div class="t-line"><span>${plural(L.length, 'produto', 'produtos')} · ${plural(tot, 'unidade disponível', 'unidades disponíveis')}</span>${baixo ? `<span class="pill warn">${baixo} em alerta</span>` : '<span class="pill ok">Tudo em dia</span>'}</div></div>`;
   h += `<p class="small muted" style="margin:0 2px">O disponível desconta sozinho os pedidos pendentes, confirmados e entregues. Quando fizer mais cookies, toque em Adicionar.</p>`;
@@ -1415,6 +1429,51 @@ function sheetMov(pid, motivo, voltar) {
   });
 }
 
+function sheetEstResumo() {
+  const disp = dispMap();
+  const L = listaProdutos().filter(p => p.ativo !== false);
+  const g = { bad:[], warn:[], ok:[] };
+  let unid = 0, custo = 0, valor = 0, semCusto = false;
+  L.forEach(p => {
+    const d = disp[p.id] || 0, min = Number(p.estoqueMin) || 0, u = Math.max(0, d);
+    g[d <= 0 ? 'bad' : d <= min ? 'warn' : 'ok'].push({ p, d });
+    unid += u; custo += u * (Number(p.custo) || 0); valor += u * (Number(p.preco) || 0);
+    if (u > 0 && !(Number(p.custo) > 0)) semCusto = true;
+  });
+  custo = round2(custo); valor = round2(valor);
+  const lucro = round2(valor - custo);
+  const sit = (k, t, sub) => {
+    const n = g[k].length;
+    const row = `<span class="rt">${t}<small>${sub}</small></span><span class="rn ${k}">${n}</span>`;
+    if (!n) return `<div class="res-row">${row}</div>`;
+    return `<button type="button" class="res-row" data-res="${k}" aria-expanded="false">${row}</button><div class="res-list" data-res-list="${k}" hidden>${g[k].map(x => `<span><span>${esc(x.p.nome)}</span><span class="tnum">${x.d} disp.</span></span>`).join('')}</div>`;
+  };
+  const line = (t, v, cls = '') => `<div class="res-row ${cls}"><span class="rt">${t}</span><span class="rn">${v}</span></div>`;
+  let h = sheetHead('Resumo do estoque', 'Calculado com o disponível atual, o preço e o custo de cada produto.');
+  h += `<div class="stack">
+    <div class="card res-card"><h3>Situação</h3>
+      ${sit('bad', 'Sem estoque', 'Produtos zerados')}
+      ${sit('warn', 'Estoque baixo', 'Acima de zero, no ou abaixo do mínimo')}
+      ${sit('ok', 'Estoque saudável', 'Acima do mínimo')}
+    </div>
+    <div class="card res-card"><h3>Quantidade</h3>
+      ${line('Produtos ativos', L.length)}
+      ${line('Unidades disponíveis', plural(unid, 'unidade', 'unidades'))}
+    </div>
+    <div class="card res-card"><h3>Valor do estoque</h3>
+      ${line('Custo total', money(custo))}
+      ${line('Valor de venda', money(valor))}
+      <div class="res-row tot"><span class="rt">Lucro potencial</span><span class="rn ${lucro < 0 ? 'bad' : 'ok'}">${money(lucro)}</span></div>
+    </div>
+    ${semCusto ? `<div class="callout"><p><strong>O lucro está incompleto.</strong> Alguns produtos com estoque não têm custo cadastrado.</p><button class="btn line" data-act="res-custos">Informar custos</button></div>` : ''}
+  </div>`;
+  openSheet(h, s => {
+    s.querySelectorAll('button.res-row[data-res]').forEach(b => b.addEventListener('click', () => {
+      const l = s.querySelector(`[data-res-list="${b.dataset.res}"]`);
+      l.hidden = !l.hidden; b.setAttribute('aria-expanded', String(!l.hidden));
+    }));
+  });
+}
 function sheetEstVer(pid) {
   const p = S.produtos[pid]; if (!p) { closeSheet(); return; }
   const d = dispMap()[pid] || 0;
@@ -1706,6 +1765,8 @@ const ACT = {
   nav:b => go(b.dataset.v),
   voltar:() => go(backTo || 'mais', true),
   fechar:() => closeSheet(),
+  'est-resumo':() => sheetEstResumo(),
+  'res-custos':() => { closeSheet(); go('produtos'); },
   'sheet-bg':(b, e) => { if (e.target === b) closeSheet(); },
   per:b => { UI[b.dataset.k] = b.dataset.v; render(); },
   'st-toggle':b => { const s = b.dataset.v; if (UI.pedSt.has(s)) UI.pedSt.delete(s); else UI.pedSt.add(s); render(); },
