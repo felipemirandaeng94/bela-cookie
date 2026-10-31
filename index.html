@@ -1347,7 +1347,8 @@ function sheetPedVer(id) {
   if (p.status === 'pendente') a += `<button class="btn line" data-act="ped-status" data-v="confirmado" data-id="${sid}">${icon('check')}Confirmar</button>`;
   if (p.status === 'pendente' || p.status === 'confirmado') a += `<button class="btn ${p.status === 'confirmado' ? 'primary full' : 'okb'}" data-act="ped-status" data-v="entregue" data-id="${sid}">${icon('box')}Marcar entregue</button>`;
   if (valid && !p.pago) a += `<button class="btn okb full" data-act="ped-pagar" data-id="${sid}">${icon('wallet')}Registrar pagamento</button>`;
-  a += `<button class="btn line" data-act="ped-recibo" data-id="${sid}">${icon('share')}Enviar recibo</button>`;
+  a += `<button class="btn line" data-act="ped-recibo-img" data-id="${sid}">${icon('share')}Enviar ${p.status === 'orcamento' ? 'orçamento' : 'recibo'}</button>`;
+  a += `<button class="btn" data-act="ped-recibo" data-id="${sid}">${icon('pdf')}Baixar PDF</button>`;
   a += `<a class="btn line" href="${esc(waLink(tel, textoWhats(p)))}" target="_blank" rel="noopener">${icon('chat')}WhatsApp</a>`;
   a += `<button class="btn" data-act="ped-copiar" data-id="${sid}">${icon('copy')}Copiar resumo</button>`;
   a += `<button class="btn" data-act="ped-editar" data-id="${sid}">${icon('edit')}Editar</button>`;
@@ -1357,7 +1358,7 @@ function sheetPedVer(id) {
   else if (p.status !== 'orcamento') a += `<button class="btn danger" data-act="ped-status" data-v="cancelado" data-id="${sid}" data-confirm="Confirmar cancelamento">Cancelar pedido</button>`;
   a += `<button class="btn danger" data-act="ped-excluir" data-id="${sid}" data-confirm="Toque de novo para excluir">${icon('trash')}Excluir</button>`;
   h += `<div class="acts">${a}</div>`;
-  h += `<p class="hint">Enviar recibo gera o PDF. No iPhone abre o menu de compartilhar, para mandar no WhatsApp do cliente.${tel ? '' : ' Como o pedido não tem WhatsApp do cliente, o botão WhatsApp pede para você escolher o contato.'}</p>`;
+  h += `<p class="hint">Enviar ${p.status === 'orcamento' ? 'orçamento' : 'recibo'} gera uma imagem e abre o menu de compartilhar, para mandar no WhatsApp do cliente. Baixar PDF continua disponível.${tel ? '' : ' Como o pedido não tem WhatsApp do cliente, o botão WhatsApp pede para você escolher o contato.'}</p>`;
   h += '</div>';
   openSheet(h);
 }
@@ -1754,6 +1755,76 @@ async function gerarRecibo(p) {
   if (ok) toast('Recibo pronto.');
 }
 
+function loadImg(src) {
+  return new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; });
+}
+async function gerarReciboImg(p) {
+  if (!p) return;
+  toast('Gerando imagem…');
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch {}
+  const logo = await loadImg(LOGO_L);
+  const c = S.config, orc = p.status === 'orcamento';
+  const W = 400, M = 24, SC = 3;
+  const FB = "'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif";
+  const FD = "'Gabarito',ui-rounded,system-ui,-apple-system,'Segoe UI',sans-serif";
+  const INK = '#2a1a10', MUT = '#7a6a60', LINE = '#c9bdb4';
+  const itens = p.tipo === 'rapida' ? [{ nome:p.descricao || 'Venda', qtd:1, preco:Number(p.total) || 0 }] : (p.itens || []);
+  const cv = document.createElement('canvas'), g = cv.getContext('2d');
+  const font = (sz, w = 400, f = FB) => { g.font = `${w} ${sz}px ${f}`; };
+  const wrap = (t, maxW) => {
+    const out = []; String(t || '').split('\n').forEach(par => {
+      let line = ''; par.split(/\s+/).forEach(w => { const tt = line ? line + ' ' + w : w; if (g.measureText(tt).width > maxW && line) { out.push(line); line = w; } else line = tt; });
+      out.push(line);
+    }); return out;
+  };
+  // Duas passadas: a primeira mede a altura, a segunda desenha.
+  const layout = draw => {
+    let y = 24;
+    const txt = (t, x, yy, align = 'left', color = INK) => { if (draw) { g.fillStyle = color; g.textAlign = align; g.fillText(t, x, yy); } };
+    const row = (l, r, sz = 14, w = 400, color = INK) => { font(sz, w); y += sz + 6; txt(l, M, y, 'left', color); txt(r, W - M, y, 'right', color); y += 4; };
+    const dash = () => { y += 10; if (draw) { g.save(); g.strokeStyle = LINE; g.lineWidth = 1; g.setLineDash([4, 4]); g.beginPath(); g.moveTo(M, y); g.lineTo(W - M, y); g.stroke(); g.restore(); } y += 6; };
+    const center = (lines, sz, w = 400, color = INK, f = FB) => { font(sz, w, f); lines.forEach(l => { y += sz + 5; txt(l, W / 2, y, 'center', color); }); };
+    if (logo) { const lw = 170, lh = lw * logo.naturalHeight / logo.naturalWidth; if (draw) g.drawImage(logo, (W - lw) / 2, y, lw, lh); y += lh; }
+    else center([c.negocio || 'Bela Cookie'], 26, 700, INK, FD);
+    font(13);
+    if (c.telefone) center(['WhatsApp ' + c.telefone], 13, 400, MUT);
+    if (c.endereco) { font(13); center(wrap(c.endereco, W - 2 * M), 13, 400, MUT); }
+    dash();
+    center([orc ? 'ORÇAMENTO' : 'RECIBO DE PEDIDO'], 18, 700, INK, FD);
+    y += 4;
+    row(orc ? 'Orçamento' : 'Pedido', nfmt(p.num)); row('Data', fmtDate(p.data));
+    if (p.entrega) row('Entrega', fmtDate(p.entrega));
+    row('Cliente', String(p.clienteNome || '-').slice(0, 36));
+    dash();
+    itens.forEach(i => {
+      font(15, 700); const nl = wrap(i.nome, W - 2 * M - 110);
+      nl.forEach((l, k) => { y += 21; txt(l, M, y); if (!k) { font(15); txt(money(i.qtd * i.preco), W - M, y, 'right'); font(15, 700); } });
+      font(13); y += 18; txt(`${i.qtd} × ${money(i.preco)}`, M, y, 'left', MUT); y += 6;
+    });
+    dash();
+    if (p.tipo !== 'rapida') row('Subtotal', money(p.subtotal));
+    if (p.desconto > 0) row('Desconto', '− ' + money(p.desconto));
+    if (p.taxa > 0) row('Taxa de entrega', money(p.taxa));
+    y += 4; row('TOTAL', money(p.total), 20, 700); y += 2;
+    if (!orc) { row('Pagamento', p.forma || '-'); row('Situação', p.pago ? `Pago em ${fmtDate(p.pagoEm || p.data)}` : 'A receber'); }
+    if (c.pix && !p.pago) { font(13); wrap('Chave Pix: ' + c.pix, W - 2 * M).forEach(l => { y += 19; txt(l, M, y); }); }
+    if (p.obs) { font(13); y += 4; wrap('Obs.: ' + p.obs, W - 2 * M).forEach(l => { y += 18; txt(l, M, y, 'left', MUT); }); }
+    dash();
+    if (c.mensagem) { font(14); center(wrap(c.mensagem, W - 2 * M), 14); }
+    y += 6; center(['Documento sem valor fiscal'], 11, 400, MUT);
+    return y + 22;
+  };
+  const H = Math.ceil(layout(false));
+  cv.width = W * SC; cv.height = H * SC;
+  g.scale(SC, SC); g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H); g.textBaseline = 'alphabetic';
+  layout(true);
+  const blob = await new Promise(res => cv.toBlob(res, 'image/png'));
+  if (!blob) { toast('Não consegui gerar a imagem.', 'bad'); return; }
+  const nome = `${orc ? 'orcamento' : 'recibo'}-${String(p.num).padStart(4, '0')}.png`;
+  const ok = await shareFile(nome, blob, 'image/png', `${orc ? 'Orçamento' : 'Recibo'} ${nfmt(p.num)}`);
+  if (ok) toast('Imagem pronta.');
+}
+
 function seed() {
   if (Object.keys(S.produtos).length) return;
   CARDAPIO.forEach(([nome, preco], i) => put('produtos', { id:'p' + uid() + i, nome, preco, custo:0, estoqueMin:0, ativo:true, foto:'', criadoEm:Date.now() + i }));
@@ -1780,6 +1851,7 @@ const ACT = {
   'ped-pagar':b => pagar(b.dataset.id, true, b.dataset.inline === '1'),
   'ped-despagar':b => pagar(b.dataset.id, false),
   'ped-recibo':b => gerarRecibo(S.pedidos[b.dataset.id]),
+  'ped-recibo-img':b => gerarReciboImg(S.pedidos[b.dataset.id]),
   'ped-copiar':b => { const p = S.pedidos[b.dataset.id]; if (p) copiar(textoWhats(p), 'Resumo copiado. Cole no WhatsApp.'); },
   'ped-editar':b => { const p = S.pedidos[b.dataset.id]; if (p) sheetPedForm({ ped:p }); },
   'ped-excluir':b => { if (!arm(b)) return; del('pedidos', b.dataset.id); closeSheet(); toast('Pedido excluído.'); },
